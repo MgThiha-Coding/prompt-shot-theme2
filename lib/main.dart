@@ -447,7 +447,7 @@ class FooterSection extends StatelessWidget {
       child: const Text(
         '© 2025 PromptShot. All rights reserved.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.blue, fontSize: 14),
+        style: TextStyle(color: Colors.yellow, fontSize: 14),
       ),
     );
   }
