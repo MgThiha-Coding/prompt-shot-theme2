@@ -357,7 +357,7 @@ class NavBar extends StatelessWidget {
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             'PromptShot',
@@ -368,6 +368,7 @@ class NavBar extends StatelessWidget {
               letterSpacing: 1.2,
             ),
           ),
+          /*
           Row(
             children: [
               NavBarItem(title: 'Home', onTap: onHomeTap),
@@ -379,6 +380,7 @@ class NavBar extends StatelessWidget {
               NavBarItem(title: 'Contact', onTap: onContactTap),
             ],
           ),
+          */
         ],
       ),
     );
@@ -445,7 +447,7 @@ class FooterSection extends StatelessWidget {
       child: const Text(
         '© 2025 PromptShot. All rights reserved.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.black54, fontSize: 14),
+        style: TextStyle(color: Colors.blue, fontSize: 14),
       ),
     );
   }
