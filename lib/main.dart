@@ -426,11 +426,22 @@ class HeaderSection extends StatelessWidget {
 
 class InfoSection extends StatelessWidget {
   const InfoSection({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'PromptShot is a curated gallery showcasing stunning AI-generated images created from creative prompts. Explore, download, and get inspired by the power of imagination combined with technology.',
-      style: TextStyle(fontSize: 18, color: Colors.black87, height: 1.5),
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+      children: [
+        Text(
+          'PromptShot is a curated gallery showcasing stunning AI-generated images created from creative prompts. Explore, download, and get inspired by the power of imagination combined with technology.',
+          style: TextStyle(fontSize: 18, color: Colors.black87, height: 1.5),
+        ),
+        SizedBox(height: 16), // Add some spacing between the two texts
+        Text(
+          'PromptShot ကတော့ စိတ်ကူးကောင်းတဲ့ စာသားလေးတွေကနေ AI နဲ့ ဖန်တီးထားတဲ့ လှပတဲ့ ပုံလေးတွေကို စုစည်းပြသထားတဲ့ ပြခန်းလေးပါ။ ဒီထဲမှာ ပုံလေးတွေကို လေ့လာကြည့်ရှုနိုင်သလို၊ ဒေါင်းလုဒ်လုပ်ပြီး စိတ်ကူးသစ်တွေလည်း ရယူနိုင်ပါတယ်။ နည်းပညာနဲ့ စိတ်ကူးစိတ်သန်းတွေ ပေါင်းစပ်လိုက်တဲ့အခါ ဘယ်လောက်အစွမ်းထက်လဲဆိုတာ ကိုယ်တိုင်တွေ့မြင်ခံစားကြည့်ပါဦးနော်။',
+          style: TextStyle(fontSize: 18, color: Colors.black87, height: 1.5),
+        ),
+      ],
     );
   }
 }
