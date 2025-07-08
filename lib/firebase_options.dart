@@ -61,4 +61,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'prompt-shot-database.firebasestorage.app',
     measurementId: 'G-ECYFB7FH0B',
   );
+
 }
