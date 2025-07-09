@@ -5,21 +5,31 @@ class PrivacyPolicyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-      child: const Text(
-        'Privacy Policy\n\n'
-        'We respect your privacy and are committed to protecting your personal data.\n\n'
-        'Information we collect:\n'
-        '- Usage data such as IP address, browser type, and visit times.\n'
-        '- Cookies to improve user experience.\n\n'
-        'How we use your data:\n'
-        '- To operate and improve the website.\n'
-        '- To analyze traffic and usage patterns.\n\n'
-        'We do not sell or share your personal data with third parties.\n\n'
-        'By using our website, you consent to this privacy policy.\n\n'
-        'For questions, please contact us at support@yourdomain.com.',
-        style: TextStyle(fontSize: 16, color: Colors.white70),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 32),
+        child: const Text(
+          'Privacy Policy\n\n'
+          'We respect your privacy and are committed to protecting your personal data.\n\n'
+          'Information We Collect:\n'
+          '- Usage data such as IP address, browser type, and visit times.\n'
+          '- Cookies to enhance and personalize your experience.\n\n'
+          'How We Use Your Data:\n'
+          '- To operate, maintain, and improve our website.\n'
+          '- To analyze traffic, usage trends, and performance.\n\n'
+          'Data Sharing:\n'
+          'We do not sell, trade, or share your personal data with third parties.\n\n'
+          'Consent:\n'
+          'By using our website, you agree to the terms outlined in this privacy policy.\n\n'
+          'Contact:\n'
+          'For questions or concerns, contact us at support@yourdomain.com.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white70,
+            height: 1.5,
+          ),
+        ),
       ),
     );
   }

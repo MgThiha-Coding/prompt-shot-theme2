@@ -3,9 +3,6 @@ import 'package:flutter/services.dart'; // Clipboard
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
-import 'package:prompt_shot/widgets/drawer_menu.dart';
-import '../widgets/footer_section.dart';
-
 class ImageDetailPage extends StatelessWidget {
   final String imageUrl;
   final DateTime uploadedAt;
@@ -54,64 +51,46 @@ class ImageDetailPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
-    return Scaffold(
-      appBar: isMobile
-          ? AppBar(
-              title: const Text('Image Detail'),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              iconTheme: const IconThemeData(color: Colors.amber),
-            )
-          : null,
-      drawer: isMobile ? const DrawerMenu() : null,
-      body: Column(
-        children: [
-        
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1200),
-                  child: isMobile
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _imageView(context),
-                            const SizedBox(height: 8),
-                            _downloadButton(context),
-                            const SizedBox(height: 24),
-                            _promptView(context),
-                          ],
-                        )
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 24),
-                                child: _promptView(context),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _imageView(context),
-                                  const SizedBox(height: 8),
-                                  _downloadButton(context),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _imageView(context),
+                    const SizedBox(height: 8),
+                    _downloadButton(context),
+                    const SizedBox(height: 24),
+                    _promptView(context),
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 24),
+                        child: _promptView(context),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _imageView(context),
+                          const SizedBox(height: 8),
+                          _downloadButton(context),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ),
-          const FooterSection(),
-        ],
+        ),
       ),
     );
   }

@@ -43,20 +43,38 @@ class NavBar extends StatelessWidget {
           // Navigation items
           _NavBarItem(title: 'Home', selected: selected == 'home', route: '/'),
           const SizedBox(width: 24),
-          _NavBarItem(title: 'Gallery', selected: selected == 'gallery', route: '/gallery'),
+          _NavBarItem(
+            title: 'Gallery',
+            selected: selected == 'gallery',
+            route: '/gallery',
+          ),
           const SizedBox(width: 24),
-          _NavBarItem(title: 'About', selected: selected == 'about', route: '/about'),
+          _NavBarItem(
+            title: 'About',
+            selected: selected == 'about',
+            route: '/about',
+          ),
           const SizedBox(width: 24),
-          _NavBarItem(title: 'Blog', selected: selected == 'blog', route: '/blog'),
+          _NavBarItem(
+            title: 'Blog',
+            selected: selected == 'blog',
+            route: '/blog',
+          ),
           const SizedBox(width: 24),
-          _NavBarItem(title: 'Privacy Policy', selected: selected == 'privacy', route: '/privacy'),
+          _NavBarItem(
+            title: 'Privacy Policy',
+            selected: selected == 'privacy',
+            route: '/privacy',
+          ),
           const SizedBox(width: 24),
-          _NavBarItem(title: 'Contact', selected: selected == 'contact', route: '/contact'),
+          _NavBarItem(
+            title: 'Contact',
+            selected: selected == 'contact',
+            route: '/contact',
+          ),
 
           // Space before theme switch
           const SizedBox(width: 40),
-
-        
         ],
       ),
     );
@@ -77,7 +95,7 @@ class _NavBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.go(route),  // Use go_router navigation here
+      onTap: () => context.go(route), // Use go_router navigation here
       borderRadius: BorderRadius.circular(4),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),

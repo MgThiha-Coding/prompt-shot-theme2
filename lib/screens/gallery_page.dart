@@ -79,44 +79,51 @@ class _GalleryPageState extends State<GalleryPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-      child: _images.isEmpty && _isLoading
-          ? const Center(child: AnimatedLoader())
-          : GridView.builder(
-              controller: _scrollController,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: getCrossAxisCount(width),
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: _images.length + (_hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _images.length) {
-                  final doc = _images[index];
-                  return ImageCard(
-                    imageUrl: doc['image_url'],
-                    uploadedAt: (doc['uploaded_at'] as Timestamp).toDate(),
-                    prompt: doc['prompt'] ?? 'No prompt provided',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ImageDetailPage(
-                            imageUrl: doc['image_url'],
-                            uploadedAt: (doc['uploaded_at'] as Timestamp).toDate(),
-                            prompt: doc['prompt'] ?? 'No prompt provided',
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // 🛡️ Prevent ghosting
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        child: _images.isEmpty && _isLoading
+            ? const Center(child: AnimatedLoader())
+            : GridView.builder(
+                controller: _scrollController,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: getCrossAxisCount(width),
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: _images.length + (_hasMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < _images.length) {
+                    final doc = _images[index];
+                    final imageUrl = doc['image_url'];
+                    final uploadedAt = (doc['uploaded_at'] as Timestamp).toDate();
+                    final prompt = doc['prompt'] ?? 'No prompt provided';
+
+                    return ImageCard(
+                      imageUrl: imageUrl,
+                      uploadedAt: uploadedAt,
+                      prompt: prompt,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ImageDetailPage(
+                              imageUrl: imageUrl,
+                              uploadedAt: uploadedAt,
+                              prompt: prompt,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+      ),
     );
   }
 }

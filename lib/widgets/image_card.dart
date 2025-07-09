@@ -90,12 +90,7 @@ class ImageCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  /*
-                  Text(
-                    formattedDate,
-                    style: const TextStyle(color: Colors.white54, fontSize: 12),
-                  ),
-                  */
+                
                   const SizedBox(height: 8),
                   ExpansionTile(
                     title: const Text(
@@ -108,7 +103,7 @@ class ImageCard extends StatelessWidget {
                     ),
                     children: [
                       SizedBox(
-                        height: 120, // fixed height for prompt box
+                        height: 120, 
                         child: SingleChildScrollView(
                           child: Text(
                             prompt,

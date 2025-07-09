@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prompt_shot/widgets/animated_loader.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
@@ -86,7 +87,7 @@ class LimitedGallerySection extends StatelessWidget {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
-            onPressed: () => Navigator.pushNamed(context, '/gallery'),
+            onPressed: () => context.go('/gallery'),
             icon: const Icon(Icons.arrow_forward),
             label: const Text('View More'),
           ),
