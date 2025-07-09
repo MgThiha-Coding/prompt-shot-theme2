@@ -21,18 +21,14 @@ class ContactPage extends StatelessWidget {
       drawer: isMobile ? DrawerMenu() : null,
       body: Column(
         children: [
-          if (!isMobile)
-            NavBar(
-              selected: 'contact',
-            ),
+          if (!isMobile) NavBar(selected: 'contact'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: const Text(
                 'Contact Us\n\n'
-                'For inquiries, collaborations, or support, please reach out to us at:\n\n'
-                'Email: contact@promptshot.com\n'
-                'Phone: +123-456-7890\n\n'
+                'For inquiries, collaborations, or support, please reach out to us at:\n'
+                'Email: promptshot80@gmail.com\n'
                 'We look forward to hearing from you!',
                 style: TextStyle(fontSize: 18, color: Colors.white70),
               ),
@@ -47,6 +43,8 @@ class ContactPage extends StatelessWidget {
 
 // Reuse DrawerMenu from other pages
 class DrawerMenu extends StatelessWidget {
+  const DrawerMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -55,8 +53,10 @@ class DrawerMenu extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.blue.shade700),
-            child: const Text('PromptShot Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: const Text(
+              'PromptShot Menu',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
           ),
           _buildDrawerItem(context, 'Home', '/'),
           _buildDrawerItem(context, 'Gallery', '/gallery'),

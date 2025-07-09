@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DrawerMenu extends StatelessWidget {
-  final VoidCallback onHomeTap;
-  final VoidCallback onGalleryTap;
-  final VoidCallback onAboutTap;
-  final VoidCallback onContactTap;
-
-  const DrawerMenu({
-    super.key,
-    required this.onHomeTap,
-    required this.onGalleryTap,
-    required this.onAboutTap,
-    required this.onContactTap,
-  });
+  const DrawerMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,41 +10,30 @@ class DrawerMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
+            decoration: BoxDecoration(color: Colors.blue.shade700),
             child: const Text(
               'PromptShot Menu',
               style: TextStyle(color: Colors.white, fontSize: 24),
             ),
           ),
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-              onHomeTap();
-            },
-          ),
-          ListTile(
-            title: const Text('Gallery'),
-            onTap: () {
-              Navigator.pop(context);
-              onGalleryTap();
-            },
-          ),
-          ListTile(
-            title: const Text('About'),
-            onTap: () {
-              Navigator.pop(context);
-              onAboutTap();
-            },
-          ),
-          ListTile(
-            title: const Text('Contact'),
-            onTap: () {
-              Navigator.pop(context);
-              onContactTap();
-            },
-          ),
+          _buildDrawerItem(context, 'Home', '/'),
+          _buildDrawerItem(context, 'Gallery', '/gallery'),
+          _buildDrawerItem(context, 'About', '/about'),
+          _buildDrawerItem(context, 'Blog', '/blog'),             // new
+          _buildDrawerItem(context, 'Privacy Policy', '/privacy'), // new
+          _buildDrawerItem(context, 'Contact', '/contact'),
         ],
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(BuildContext context, String title, String route) {
+    return ListTile(
+      title: Text(title),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, route);
+      },
     );
   }
 }

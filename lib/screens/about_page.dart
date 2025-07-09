@@ -21,18 +21,18 @@ class AboutPage extends StatelessWidget {
       drawer: isMobile ? DrawerMenu() : null,
       body: Column(
         children: [
-          if (!isMobile)
-            NavBar(
-              selected: 'about',
-            ),
+          if (!isMobile) NavBar(selected: 'about'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: const Text(
                 'About PromptShot\n\n'
-                'PromptShot is a curated gallery showcasing stunning AI-generated images created from creative prompts. '
-                'Our mission is to inspire creativity by blending imagination and technology.\n\n'
-                'This project is built with Flutter, Firebase, and hosted on Vercel. Feel free to explore and contribute!',
+                'PromptShot is a curated gallery that showcases captivating AI-generated images, each born from a blend of creativity, technology, and human essence. '
+                'We specialize in transforming original human photos into stunning artistic styles using advanced prompt engineering powered by Hailuo AI.\n\n'
+                'Whether it’s bringing a fantasy vision to life or stylizing portraits with cinematic flair, PromptShot captures imagination in pixels. '
+                'Our goal is to inspire and empower anyone to see their own image reimagined through the lens of artificial intelligence.\n\n'
+                'PromptShot is built using Flutter and Firebase, and proudly hosted on Vercel. It’s more than just a gallery — it’s a creative space where your face meets futuristic art.\n\n'
+                'Feel free to explore, get inspired, and share the magic!',
                 style: TextStyle(fontSize: 18, color: Colors.white70),
               ),
             ),
@@ -46,6 +46,8 @@ class AboutPage extends StatelessWidget {
 
 // Reuse DrawerMenu from home_page.dart or extract to widgets folder
 class DrawerMenu extends StatelessWidget {
+  const DrawerMenu({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -54,8 +56,10 @@ class DrawerMenu extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.blue.shade700),
-            child: const Text('PromptShot Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: const Text(
+              'PromptShot Menu',
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
           ),
           _buildDrawerItem(context, 'Home', '/'),
           _buildDrawerItem(context, 'Gallery', '/gallery'),

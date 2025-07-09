@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prompt_shot/screens/content_page.dart';
+import 'package:prompt_shot/widgets/blog_post_page.dart';
+import 'package:prompt_shot/widgets/pavicy_policy_page.dart';
 import 'firebase_options.dart';
 
 import 'screens/home_page.dart';
@@ -29,8 +31,11 @@ class PromptShotApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/gallery': (context) => const GalleryPage(),
         '/about': (context) => const AboutPage(),
+        '/blog': (context) => const BlogPostPage(),         
+        '/privacy': (context) => const PrivacyPolicyPage(),   
         '/contact': (context) => const ContactPage(),
       },
     );
   }
 }
+

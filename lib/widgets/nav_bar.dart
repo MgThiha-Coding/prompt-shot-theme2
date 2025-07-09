@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NavBar extends StatelessWidget {
-  final String selected; // 'home', 'gallery', 'about', 'contact'
+  final String selected; // 'home', 'gallery', 'about', 'contact', 'blog', 'privacy'
 
   const NavBar({super.key, required this.selected});
 
@@ -27,6 +27,10 @@ class NavBar extends StatelessWidget {
           _NavBarItem(title: 'Gallery', selected: selected == 'gallery', route: '/gallery'),
           const SizedBox(width: 24),
           _NavBarItem(title: 'About', selected: selected == 'about', route: '/about'),
+          const SizedBox(width: 24),
+          _NavBarItem(title: 'Blog', selected: selected == 'blog', route: '/blog'),          // new
+          const SizedBox(width: 24),
+          _NavBarItem(title: 'Privacy Policy', selected: selected == 'privacy', route: '/privacy'), // new
           const SizedBox(width: 24),
           _NavBarItem(title: 'Contact', selected: selected == 'contact', route: '/contact'),
         ],

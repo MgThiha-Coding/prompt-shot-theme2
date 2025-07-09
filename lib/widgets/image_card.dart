@@ -105,7 +105,15 @@ class ImageCard extends StatelessWidget {
                       ),
                     ),
                     children: [
-                      Text(prompt, style: const TextStyle(color: Colors.white70)),
+                      SizedBox(
+                        height: 120, // fixed height for prompt box
+                        child: SingleChildScrollView(
+                          child: Text(
+                            prompt,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       ElevatedButton.icon(
                         onPressed: () => _copyPrompt(context),

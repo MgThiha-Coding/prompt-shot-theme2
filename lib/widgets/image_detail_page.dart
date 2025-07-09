@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For clipboard
+import 'package:flutter/services.dart'; // Clipboard
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
@@ -87,7 +87,6 @@ class ImageDetailPage extends StatelessWidget {
                       : Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Prompt section (left)
                             Expanded(
                               flex: 4,
                               child: Padding(
@@ -95,7 +94,6 @@ class ImageDetailPage extends StatelessWidget {
                                 child: _promptView(context),
                               ),
                             ),
-                            // Image section (right)
                             Expanded(
                               flex: 5,
                               child: Column(
@@ -158,15 +156,18 @@ class ImageDetailPage extends StatelessWidget {
   Widget _imageView(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.contain,
-        width: double.infinity,
-        loadingBuilder: (_, child, progress) =>
-            progress == null
-                ? child
-                : const Center(child: CircularProgressIndicator()),
-        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 80),
+      child: Container(
+        height: 420,
+        color: Colors.grey.shade900,
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.contain, // Show entire image within 400px height
+          width: double.infinity,
+          loadingBuilder: (_, child, progress) =>
+              progress == null ? child : const Center(child: CircularProgressIndicator()),
+          errorBuilder: (_, __, ___) =>
+              const Icon(Icons.broken_image, size: 80),
+        ),
       ),
     );
   }
