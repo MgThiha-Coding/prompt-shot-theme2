@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prompt_shot/screens/content_page.dart';
+import 'package:prompt_shot/widgets/animated_loader.dart';
+import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
-import '../widgets/nav_bar.dart';
-import '../widgets/footer_section.dart';
-import '../widgets/image_card.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -80,68 +78,45 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final isMobile = width < 600;
 
-    return Scaffold(
-      appBar: isMobile
-          ? AppBar(
-              title: const Text('Gallery'),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              iconTheme: const IconThemeData(color: Colors.amber),
-            )
-          : null,
-      drawer: isMobile ? DrawerMenu() : null,
-      body: Column(
-        children: [
-          if (!isMobile)
-            const NavBar(
-              selected: 'gallery',
-            ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-              child: _images.isEmpty && _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : GridView.builder(
-                      controller: _scrollController,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: getCrossAxisCount(width),
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.75,
-                      ),
-                      itemCount: _images.length + (_hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index < _images.length) {
-                          final doc = _images[index];
-                          return ImageCard(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+      child: _images.isEmpty && _isLoading
+          ? const Center(child: AnimatedLoader())
+          : GridView.builder(
+              controller: _scrollController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: getCrossAxisCount(width),
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: _images.length + (_hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < _images.length) {
+                  final doc = _images[index];
+                  return ImageCard(
+                    imageUrl: doc['image_url'],
+                    uploadedAt: (doc['uploaded_at'] as Timestamp).toDate(),
+                    prompt: doc['prompt'] ?? 'No prompt provided',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ImageDetailPage(
                             imageUrl: doc['image_url'],
                             uploadedAt: (doc['uploaded_at'] as Timestamp).toDate(),
                             prompt: doc['prompt'] ?? 'No prompt provided',
-                            
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ImageDetailPage(
-                                    imageUrl: doc['image_url'],
-                                    uploadedAt: (doc['uploaded_at'] as Timestamp).toDate(),
-                                    prompt: doc['prompt'] ?? 'No prompt provided',
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        } else {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                      },
-                    ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
             ),
-          ),
-          const FooterSection(),
-        ],
-      ),
     );
   }
 }

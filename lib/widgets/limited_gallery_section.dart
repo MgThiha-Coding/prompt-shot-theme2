@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:prompt_shot/widgets/animated_loader.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
 
@@ -31,7 +32,7 @@ class LimitedGallerySection extends StatelessWidget {
           future: _fetchLatestImages(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return AnimatedLoader();
             }
 
             if (snapshot.hasError) {

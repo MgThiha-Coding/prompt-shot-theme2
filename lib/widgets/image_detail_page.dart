@@ -3,8 +3,7 @@ import 'package:flutter/services.dart'; // Clipboard
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
-import 'package:prompt_shot/screens/content_page.dart';
-import '../widgets/nav_bar.dart';
+import 'package:prompt_shot/widgets/drawer_menu.dart';
 import '../widgets/footer_section.dart';
 
 class ImageDetailPage extends StatelessWidget {
@@ -63,10 +62,10 @@ class ImageDetailPage extends StatelessWidget {
               iconTheme: const IconThemeData(color: Colors.amber),
             )
           : null,
-      drawer: isMobile ? DrawerMenu() : null,
+      drawer: isMobile ? const DrawerMenu() : null,
       body: Column(
         children: [
-          if (!isMobile) const NavBar(selected: ''),
+        
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -145,10 +144,6 @@ class ImageDetailPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
-          'Uploaded At: ${uploadedAt.toLocal().toString().split('.')[0]}',
-          style: const TextStyle(color: Colors.grey),
-        ),
       ],
     );
   }
@@ -157,11 +152,11 @@ class ImageDetailPage extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        height: 420,
+        height: 400,
         color: Colors.grey.shade900,
         child: Image.network(
           imageUrl,
-          fit: BoxFit.contain, // Show entire image within 400px height
+          fit: BoxFit.contain,
           width: double.infinity,
           loadingBuilder: (_, child, progress) =>
               progress == null ? child : const Center(child: CircularProgressIndicator()),
@@ -175,7 +170,7 @@ class ImageDetailPage extends StatelessWidget {
   Widget _downloadButton(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: () => _downloadImage(context),
-      icon: const Icon(Icons.download, size: 18),
+      icon: const Icon(Icons.download, size: 24),
       label: const Text('Download Image'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.amber,

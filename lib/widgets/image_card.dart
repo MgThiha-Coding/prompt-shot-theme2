@@ -90,10 +90,12 @@ class ImageCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
+                  /*
                   Text(
                     formattedDate,
                     style: const TextStyle(color: Colors.white54, fontSize: 12),
                   ),
+                  */
                   const SizedBox(height: 8),
                   ExpansionTile(
                     title: const Text(
