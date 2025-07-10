@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
+import 'package:shimmer/shimmer.dart';
 
 class ImageCard extends StatelessWidget {
   final String imageUrl;
@@ -50,6 +51,21 @@ class ImageCard extends StatelessWidget {
     );
   }
 
+  Widget buildShimmerPlaceholder() {
+    return Shimmer.fromColors(
+      baseColor: const Color(0xFF1C1C1C),
+      highlightColor: const Color(0xFF2A2A2A),
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          color: Color(0xFF1C1C1C),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -61,28 +77,18 @@ class ImageCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(14),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   loadingBuilder: (context, child, progress) {
                     if (progress == null) return child;
-                    return Container(
-                      color: Colors.grey.shade800,
-                      child: const Center(child: CircularProgressIndicator()),
-                    );
+                    return buildShimmerPlaceholder(); // While loading
                   },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey.shade800,
-                    child: const Icon(
-                      Icons.broken_image,
-                      size: 50,
-                      color: Colors.redAccent,
-                    ),
-                  ),
+                  errorBuilder: (context, error, stackTrace) {
+                    return buildShimmerPlaceholder(); // On error too
+                  },
                 ),
               ),
             ),
@@ -90,7 +96,6 @@ class ImageCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                
                   const SizedBox(height: 8),
                   ExpansionTile(
                     title: const Text(
@@ -103,7 +108,7 @@ class ImageCard extends StatelessWidget {
                     ),
                     children: [
                       SizedBox(
-                        height: 120, 
+                        height: 120,
                         child: SingleChildScrollView(
                           child: Text(
                             prompt,

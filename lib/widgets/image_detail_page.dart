@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
+import 'package:shimmer/shimmer.dart';
 
 class ImageDetailPage extends StatelessWidget {
   final String imageUrl;
@@ -44,6 +45,21 @@ class ImageDetailPage extends StatelessWidget {
         SnackBar(content: Text('Error downloading image: $e')),
       );
     }
+  }
+
+  Widget _buildShimmerPlaceholder(double height) {
+    return Shimmer.fromColors(
+      baseColor: const Color(0xFF1C1C1C),
+      highlightColor: const Color(0xFF2A2A2A),
+      child: Container(
+        height: height,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1C1C1C),
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
   }
 
   @override
@@ -137,8 +153,8 @@ class ImageDetailPage extends StatelessWidget {
           fit: BoxFit.contain,
           width: double.infinity,
           loadingBuilder: (_, child, progress) =>
-              progress == null ? child : const Center(child: CircularProgressIndicator()),
-          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 80),
+              progress == null ? child : _buildShimmerPlaceholder(height),
+          errorBuilder: (_, __, ___) => _buildShimmerPlaceholder(height), // shimmer on error too
         ),
       ),
     );
