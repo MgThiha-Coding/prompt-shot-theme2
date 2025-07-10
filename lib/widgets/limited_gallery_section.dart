@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prompt_shot/widgets/animated_loader.dart';
+import 'package:prompt_shot/widgets/shimmer.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
 
@@ -19,6 +19,7 @@ class LimitedGallerySection extends StatelessWidget {
     return snapshot.docs;
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -33,7 +34,20 @@ class LimitedGallerySection extends StatelessWidget {
           future: _fetchLatestImages(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return AnimatedLoader();
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: 6,
+                itemBuilder: (context, index) {
+                  return buildShimmerPlaceholder();
+                },
+              );
             }
 
             if (snapshot.hasError) {

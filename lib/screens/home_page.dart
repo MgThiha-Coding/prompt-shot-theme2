@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prompt_shot/widgets/footer_section.dart';
 import '../widgets/limited_gallery_section.dart';
 import '../widgets/header_section.dart';
 import '../widgets/info_section.dart';
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,7 +30,8 @@ class HomePage extends StatelessWidget {
             const InfoSection(),
             const SizedBox(height: 32),
             LimitedGallerySection(crossAxisCount: getCrossAxisCount(width)),
-            const SizedBox(height: 70),
+            const SizedBox(height: 50),
+            const FooterSection(),
           ],
         ),
       ),

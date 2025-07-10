@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prompt_shot/widgets/animated_loader.dart';
+import 'package:prompt_shot/widgets/shimmer.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
 
@@ -75,20 +75,39 @@ class _GalleryPageState extends State<GalleryPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
+    int crossAxisCount = getCrossAxisCount(width);
+
+    // Number of shimmer placeholders during initial load
+    const int shimmerCount = 10;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // 🛡️ Prevent ghosting
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         child: _images.isEmpty && _isLoading
-            ? const Center(child: AnimatedLoader())
+            ? GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: shimmerCount,
+                itemBuilder: (context, index) {
+                  return buildShimmerPlaceholder();
+                },
+              )
             : GridView.builder(
                 controller: _scrollController,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: getCrossAxisCount(width),
+                  crossAxisCount: crossAxisCount,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
                   childAspectRatio: 0.75,
@@ -119,7 +138,17 @@ class _GalleryPageState extends State<GalleryPage> {
                       },
                     );
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    // Pagination loading shimmer placeholder
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: SizedBox(
+                          width: 60,
+                          height: 90,
+                          child: buildShimmerPlaceholder(),
+                        ),
+                      ),
+                    );
                   }
                 },
               ),

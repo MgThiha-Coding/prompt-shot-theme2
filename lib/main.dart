@@ -1,95 +1,4 @@
-/*
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:go_router/go_router.dart';
-import 'package:prompt_shot/screens/content_page.dart';
 
-// Firebase options
-import 'firebase_options.dart';
-
-// Screens
-import 'screens/home_page.dart';
-import 'screens/gallery_page.dart';
-import 'screens/about_page.dart';
-import 'screens/blog_post_page.dart';
-import 'screens/pavicy_policy_page.dart';
-
-// Shared UI
-import 'widgets/nav_bar.dart';
-import 'widgets/footer_section.dart';
-import 'widgets/drawer_menu.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const PromptShotApp());
-}
-
-class PromptShotApp extends StatelessWidget {
-  const PromptShotApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: _router,
-      theme: ThemeData.dark(),
-      title: 'PromptShot',
-    );
-  }
-}
-
-// Detect current active nav route
-String getSelectedNavKey(String? path) {
-  if (path == null || path == '/') return 'home';
-  if (path.startsWith('/gallery')) return 'gallery';
-  if (path.startsWith('/about')) return 'about';
-  if (path.startsWith('/contact')) return 'contact';
-  if (path.startsWith('/privacy')) return 'privacy';
-  if (path.startsWith('/blog')) return 'blog';
-  return '';
-}
-
-final GoRouter _router = GoRouter(
-  initialLocation: '/',
-  debugLogDiagnostics: true,
-  routes: [
-    ShellRoute(
-      builder: (context, state, child) {
-        final width = MediaQuery.of(context).size.width;
-        final isMobile = width < 800;
-        final selected = getSelectedNavKey(state.fullPath);
-
-        return Scaffold(
-          appBar: isMobile
-              ? AppBar(
-                  title: const Text('PromptShot'),
-                  backgroundColor: Colors.black,
-                  iconTheme: const IconThemeData(color: Colors.amber),
-                )
-              : null,
-          drawer: isMobile ? const DrawerMenu() : null,
-          body: Column(
-            children: [
-              if (!isMobile) NavBar(selected: selected),
-              Expanded(child: child),
-              const FooterSection(),
-            ],
-          ),
-        );
-      },
-      routes: [
-        GoRoute(path: '/', builder: (context, state) => const HomePage()),
-        GoRoute(path: '/gallery', builder: (context, state) => const GalleryPage()),
-        GoRoute(path: '/about', builder: (context, state) => const AboutPage()),
-        GoRoute(path: '/contact', builder: (context, state) => const ContactPage()),
-        GoRoute(path: '/privacy', builder: (context, state) => const PrivacyPolicyPage()),
-        GoRoute(path: '/blog', builder: (context, state) => const BlogPostPage()),
-      ],
-    ),
-  ],
-);
-*/
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
@@ -104,9 +13,7 @@ import 'screens/gallery_page.dart';
 import 'screens/about_page.dart';
 import 'screens/blog_post_page.dart';
 
-
 import 'widgets/nav_bar.dart';
-import 'widgets/footer_section.dart';
 import 'widgets/drawer_menu.dart';
 
 // Define your light and dark themes
@@ -200,7 +107,7 @@ class PromptShotApp extends StatefulWidget {
 }
 
 class _PromptShotAppState extends State<PromptShotApp> {
-  ThemeMode _themeMode = ThemeMode.dark; // default to dark mode
+  ThemeMode _themeMode = ThemeMode.dark;
 
   void _toggleTheme(bool isDark) {
     setState(() {
@@ -247,18 +154,32 @@ class _PromptShotAppState extends State<PromptShotApp> {
                     onThemeChanged: _toggleTheme,
                   ),
                 Expanded(child: child),
-                const FooterSection(),
               ],
             ),
           );
         },
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomePage()),
-          GoRoute(path: '/gallery', builder: (context, state) => const GalleryPage()),
-          GoRoute(path: '/about', builder: (context, state) => const AboutPage()),
-          GoRoute(path: '/contact', builder: (context, state) => const ContactPage()),
-          GoRoute(path: '/privacy', builder: (context, state) => const PrivacyPolicyPage()),
-          GoRoute(path: '/blog', builder: (context, state) => const BlogPostPage()),
+          GoRoute(
+            path: '/gallery',
+            builder: (context, state) => const GalleryPage(),
+          ),
+          GoRoute(
+            path: '/about',
+            builder: (context, state) => const AboutPage(),
+          ),
+          GoRoute(
+            path: '/contact',
+            builder: (context, state) => const ContactPage(),
+          ),
+          GoRoute(
+            path: '/privacy',
+            builder: (context, state) => const PrivacyPolicyPage(),
+          ),
+          GoRoute(
+            path: '/blog',
+            builder: (context, state) => const BlogPostPage(),
+          ),
         ],
       ),
     ],
