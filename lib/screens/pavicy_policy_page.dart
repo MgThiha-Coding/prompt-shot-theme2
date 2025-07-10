@@ -37,7 +37,7 @@ Consent:
 By using our website, you agree to the terms outlined in this privacy policy.
 
 Contact:
-For questions or concerns, contact us at your-real-email@example.com.
+For questions or concerns, contact us at promptshot80@gmail.com.
 ''', style: TextStyle(fontSize: 16, color: textColor, height: 1.5)),
       ),
     );
