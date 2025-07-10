@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 18),
               const InfoSection(),
               const SizedBox(height: 18),
-              LimitedGallerySection(crossAxisCount: getCrossAxisCount(width)),
+              LimitedGallerySection(),
               const SizedBox(height: 6),
               const FooterSection(),
             ],

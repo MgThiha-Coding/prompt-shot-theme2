@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prompt_shot/widgets/image_detail_page.dart';
+import 'package:prompt_shot/widgets/wallpaper_detail_page.dart';
 
 import 'firebase_options.dart';
 
@@ -12,6 +13,7 @@ import 'screens/about_page.dart';
 import 'screens/blog_post_page.dart';
 import 'screens/content_page.dart';
 import 'screens/pavicy_policy_page.dart';
+import 'screens/wallpaper_page.dart';
 
 import 'widgets/nav_bar.dart';
 import 'widgets/drawer_menu.dart';
@@ -53,6 +55,7 @@ class _PromptShotAppState extends State<PromptShotApp> {
     if (path.startsWith('/contact')) return 'contact';
     if (path.startsWith('/privacy')) return 'privacy';
     if (path.startsWith('/blog')) return 'blog';
+    if (path.startsWith('/wallpapers')) return 'wallpapers'; // <-- added
     return '';
   }
 
@@ -98,7 +101,26 @@ class _PromptShotAppState extends State<PromptShotApp> {
               builder: (context, state) => const GalleryPage(),
             ),
 
-            // <-- Moved out of /gallery route children, top-level route now
+            GoRoute(
+              path: '/wallpapers',
+              builder: (context, state) => const WallpaperPage(),
+            ),
+
+            GoRoute(
+              path: '/wallpaper/detail',
+              builder: (context, state) {
+                final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
+                final uploadedAtStr =
+                    state.uri.queryParameters['uploadedAt'] ?? '';
+                final uploadedAt = DateTime.tryParse(uploadedAtStr);
+
+                return WallpaperDetailPage(
+                  imageUrl: imageUrl,
+                  uploadedAt: uploadedAt,
+                );
+              },
+            ),
+
             GoRoute(
               path: '/gallery/image-detail',
               builder: (context, state) {

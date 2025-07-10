@@ -2,44 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prompt_shot/widgets/shimmer.dart';
-import 'package:prompt_shot/widgets/image_card.dart';
 
 final latestImagesProvider = FutureProvider<List<QueryDocumentSnapshot>>((ref) async {
   final snapshot = await FirebaseFirestore.instance
       .collection('images')
       .orderBy('uploaded_at', descending: true)
-      .limit(50)  // fetch more images so home page can show more if needed
+      .limit(50)
       .get();
   return snapshot.docs;
 });
 
-class LimitedGallerySection extends ConsumerWidget {
-  final int crossAxisCount;
+class LimitedGallerySection extends ConsumerStatefulWidget {
   final int limit;
 
-  // Default 12 images shown on home page, 6 columns by default
   const LimitedGallerySection({
     super.key,
-    this.crossAxisCount = 6,
     this.limit = 12,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final latestImagesAsync = ref.watch(latestImagesProvider);
+  ConsumerState<LimitedGallerySection> createState() => _LimitedGallerySectionState();
+}
 
-    final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: crossAxisCount,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 0.75,
+class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
+  static const double itemWidth = 300;
+  static const double itemHeight = 350;
+
+  final ScrollController _autoScrollController = ScrollController();
+
+  void _startAutoScroll() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted || !_autoScrollController.hasClients) return;
+
+    final maxScroll = _autoScrollController.position.maxScrollExtent;
+
+    _autoScrollController.animateTo(
+      maxScroll,
+      duration: const Duration(seconds: 15),
+      curve: Curves.linear,
     );
+  }
+
+  @override
+  void dispose() {
+    _autoScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final latestImagesAsync = ref.watch(latestImagesProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         const Text(
           'Latest Creations',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -51,57 +67,74 @@ class LimitedGallerySection extends ConsumerWidget {
               return const Text('No images available.');
             }
 
-            final displayedDocs = docs.take(limit).toList();
-
-            // Calculate height based on rows needed (approx 200 height per row)
-            final rowCount = (displayedDocs.length / crossAxisCount).ceil();
-            final gridHeight = rowCount * 200.0;
+            final displayedDocs = docs.take(widget.limit).toList();
+            _startAutoScroll();
 
             return SizedBox(
-              height: gridHeight,
-              child: GridView.builder(
-                shrinkWrap: true,
+              height: itemHeight,
+              child: ListView.builder(
+                controller: _autoScrollController,
+                scrollDirection: Axis.horizontal,
                 physics: const AlwaysScrollableScrollPhysics(),
-                gridDelegate: gridDelegate,
                 itemCount: displayedDocs.length,
                 itemBuilder: (context, index) {
                   final doc = displayedDocs[index];
-                  final imageUrl = doc['image_url'];
-                  final uploadedAt = (doc['uploaded_at'] as Timestamp).toDate();
-                  final prompt = doc['prompt'] ?? 'No prompt provided';
 
-                  return ImageCard(
-                    key: ValueKey(doc.id),
-                    imageUrl: imageUrl,
-                    uploadedAt: uploadedAt,
-                    prompt: prompt,
-                    onTap: () {
-                      final uri = Uri(
-                        path: '/gallery/image-detail',
-                        queryParameters: {
-                          'imageUrl': imageUrl,
-                          'prompt': prompt,
-                          'uploadedAt': uploadedAt.toIso8601String(),
-                        },
-                      );
-                      context.push(uri.toString());
-                    },
+                  final imageUrl = doc['image_url'] as String? ?? '';
+                  final uploadedAt = (doc['uploaded_at'] as Timestamp?)?.toDate() ?? DateTime.now();
+                  final prompt = doc['prompt'] as String? ?? 'No prompt provided';
+
+                  return Container(
+                    width: itemWidth,
+                    margin: EdgeInsets.only(right: index == displayedDocs.length - 1 ? 0 : 16),
+                    child: GestureDetector(
+                      onTap: () {
+                        final uri = Uri(
+                          path: '/gallery/image-detail',
+                          queryParameters: {
+                            'imageUrl': imageUrl,
+                            'prompt': prompt,
+                            'uploadedAt': uploadedAt.toIso8601String(),
+                          },
+                        );
+                        context.push(uri.toString());
+                      },
+                      child: CustomImageBox(imageUrl: imageUrl),
+                    ),
                   );
                 },
               ),
             );
           },
           loading: () => SizedBox(
-            height: 300,
-            child: GridView.builder(
-              shrinkWrap: true,
+            height: itemHeight,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: gridDelegate,
               itemCount: 6,
-              itemBuilder: (context, index) => buildShimmerPlaceholder(),
+              itemBuilder: (context, index) => Container(
+                width: itemWidth,
+                margin: EdgeInsets.only(right: index == 5 ? 0 : 16),
+                child: buildShimmerPlaceholder(),
+              ),
             ),
           ),
-          error: (error, stack) => Center(child: Text('Error: $error')),
+          error: (error, stack) => SizedBox(
+            height: itemHeight,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.error_outline, color: Colors.redAccent, size: 40),
+                  SizedBox(height: 8),
+                  Text(
+                    'Failed to load images',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 20),
         Align(
@@ -113,6 +146,61 @@ class LimitedGallerySection extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildShimmerPlaceholder() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: const Color(0xFF1C1C1C),
+      ),
+    );
+  }
+}
+
+class CustomImageBox extends StatelessWidget {
+  final String imageUrl;
+
+  const CustomImageBox({
+    super.key,
+    required this.imageUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return Container(
+              color: Colors.grey.shade900,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey.shade900,
+            child: const Center(
+              child: Icon(Icons.broken_image, size: 40, color: Colors.white30),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

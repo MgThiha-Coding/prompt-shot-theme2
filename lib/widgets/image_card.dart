@@ -119,8 +119,8 @@ class ImageCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       ElevatedButton.icon(
                         onPressed: () => _copyPrompt(context),
-                        icon: const Icon(Icons.copy, size: 18, color: Colors.white),
-                        label: const Text('Copy Prompt'),
+                        icon: const Icon(Icons.copy, size: 18, color: Color.fromARGB(255, 70, 63, 63)),
+                        label: const Text('Copy Prompt',style: TextStyle( color : Color.fromARGB(255, 68, 63, 63)),),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.amber,
                         ),

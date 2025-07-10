@@ -49,6 +49,13 @@ class NavBar extends StatelessWidget {
             route: '/gallery',
           ),
           const SizedBox(width: 24),
+
+          _NavBarItem(
+            title: 'Wallpapers',
+            selected: selected == 'wallpapers',
+            route: '/wallpapers',
+          ),
+          const SizedBox(width: 24),
           _NavBarItem(
             title: 'About',
             selected: selected == 'about',
