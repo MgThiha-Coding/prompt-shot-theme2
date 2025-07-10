@@ -23,7 +23,7 @@ class AboutPage extends StatelessWidget {
             'Explore the gallery, find your inspiration, and share your vision with the world.',
             style: TextStyle(fontSize: 18, color: Colors.white70),
           ),
-          SizedBox(height: 100),
+          SizedBox(height: 120),
           FooterSection(), 
         ],
       ),

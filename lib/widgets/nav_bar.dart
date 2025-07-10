@@ -31,7 +31,7 @@ class NavBar extends StatelessWidget {
           Text(
             'PromptShot',
             style: TextStyle(
-              color: Colors.amber.shade400,
+              color: Colors.white,
               fontWeight: FontWeight.w800,
               fontSize: 26,
               letterSpacing: 1.2,

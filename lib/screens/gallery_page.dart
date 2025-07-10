@@ -9,8 +9,8 @@ import 'package:prompt_shot/widgets/footer_section.dart';
 
 final galleryNotifierProvider =
     StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
-  return GalleryNotifier();
-});
+      return GalleryNotifier();
+    });
 
 class GalleryState {
   final List<QueryDocumentSnapshot> images;
@@ -41,7 +41,7 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
   DocumentSnapshot? _lastDocument;
 
   GalleryNotifier()
-      : super(GalleryState(images: [], isLoading: false, hasMore: true)) {
+    : super(GalleryState(images: [], isLoading: false, hasMore: true)) {
     fetchImages();
   }
 
@@ -130,6 +130,16 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
         controller: _scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         children: [
+          Text(
+            'Gallery',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 16),
           // Grid Images
           if (state.images.isEmpty && state.isLoading)
             GridView.builder(
@@ -198,7 +208,7 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
 
           const SizedBox(height: 48),
 
-          const FooterSection(), 
+          const FooterSection(),
         ],
       ),
     );

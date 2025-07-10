@@ -21,20 +21,21 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const HeaderSection(),
-            const SizedBox(height: 18),
-            const InfoSection(),
-            const SizedBox(height: 18),
-            LimitedGallerySection(crossAxisCount: getCrossAxisCount(width)),
-            const SizedBox(height: 50),
-            const FooterSection(),
-          ],
-        ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const HeaderSection(),
+              const SizedBox(height: 18),
+              const InfoSection(),
+              const SizedBox(height: 18),
+              LimitedGallerySection(crossAxisCount: getCrossAxisCount(width)),
+              const SizedBox(height: 6),
+              const FooterSection(),
+            ],
+          ),
       ),
+      
     );
   }
 }
