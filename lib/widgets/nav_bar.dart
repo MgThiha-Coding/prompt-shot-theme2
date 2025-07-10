@@ -60,23 +60,7 @@ class NavBar extends StatelessWidget {
             selected: selected == 'blog',
             route: '/blog',
           ),
-          const SizedBox(width: 24),
-          /*
-          _NavBarItem(
-            title: 'Privacy Policy',
-            selected: selected == 'privacy',
-            route: '/privacy',
-          ),
-          const SizedBox(width: 24),
-          _NavBarItem(
-            title: 'Contact',
-            selected: selected == 'contact',
-            route: '/contact',
-          ),
-          */
-
-          // Space before theme switch
-          const SizedBox(width: 40),
+          const SizedBox(width: 10),
         ],
       ),
     );

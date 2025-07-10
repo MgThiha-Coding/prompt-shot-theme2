@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Clipboard
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
@@ -60,33 +60,34 @@ class ImageDetailPage extends StatelessWidget {
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _imageView(context),
-                    const SizedBox(height: 8),
-                    _downloadButton(context),
+                    _imageView(context, 400),
+                    const SizedBox(height: 12),
+                    _buttonRow(context),
                     const SizedBox(height: 24),
-                    _promptView(context),
+                    _promptBox(context, 400),
                   ],
                 )
               : Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      flex: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 24),
-                        child: _promptView(context),
+                      flex: 5,
+                      child: SizedBox(
+                        height: 450,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _promptBox(context, 370),
+                            const SizedBox(height: 10),
+                            _buttonRow(context),
+                          ],
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 24),
                     Expanded(
                       flex: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _imageView(context),
-                          const SizedBox(height: 8),
-                          _downloadButton(context),
-                        ],
-                      ),
+                      child: _imageView(context, 450),
                     ),
                   ],
                 ),
@@ -95,7 +96,7 @@ class ImageDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _promptView(BuildContext context) {
+  Widget _promptBox(BuildContext context, double height) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,34 +105,32 @@ class ImageDetailPage extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 8),
-        Text(
-          prompt,
-          style: const TextStyle(fontSize: 18),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: () => _copyPrompt(context),
-          icon: const Icon(Icons.copy, size: 18),
-          label: const Text('Copy Prompt'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+        SizedBox(
+          height: height,
+          child: TextField(
+            controller: TextEditingController(text: prompt),
+            readOnly: true,
+            maxLines: null,
+            expands: true,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey.shade900,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
+            style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
         ),
-        const SizedBox(height: 24),
       ],
     );
   }
 
-  Widget _imageView(BuildContext context) {
+  Widget _imageView(BuildContext context, double height) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        height: 400,
+        height: height,
         color: Colors.grey.shade900,
         child: Image.network(
           imageUrl,
@@ -139,26 +138,47 @@ class ImageDetailPage extends StatelessWidget {
           width: double.infinity,
           loadingBuilder: (_, child, progress) =>
               progress == null ? child : const Center(child: CircularProgressIndicator()),
-          errorBuilder: (_, __, ___) =>
-              const Icon(Icons.broken_image, size: 80),
+          errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 80),
         ),
       ),
     );
   }
 
-  Widget _downloadButton(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => _downloadImage(context),
-      icon: const Icon(Icons.download, size: 24),
-      label: const Text('Download Image'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.amber,
-        foregroundColor: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+  Widget _buttonRow(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () => _copyPrompt(context),
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text('Copy Prompt'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
         ),
-      ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: () => _downloadImage(context),
+            icon: const Icon(Icons.download, size: 20),
+            label: const Text('Download Photo'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

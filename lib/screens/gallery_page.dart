@@ -1,29 +1,106 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:prompt_shot/widgets/shimmer.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
-import 'package:prompt_shot/widgets/image_detail_page.dart';
+import 'package:prompt_shot/widgets/footer_section.dart';
 
-class GalleryPage extends StatefulWidget {
+final galleryNotifierProvider =
+    StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
+  return GalleryNotifier();
+});
+
+class GalleryState {
+  final List<QueryDocumentSnapshot> images;
+  final bool isLoading;
+  final bool hasMore;
+
+  GalleryState({
+    required this.images,
+    required this.isLoading,
+    required this.hasMore,
+  });
+
+  GalleryState copyWith({
+    List<QueryDocumentSnapshot>? images,
+    bool? isLoading,
+    bool? hasMore,
+  }) {
+    return GalleryState(
+      images: images ?? this.images,
+      isLoading: isLoading ?? this.isLoading,
+      hasMore: hasMore ?? this.hasMore,
+    );
+  }
+}
+
+class GalleryNotifier extends StateNotifier<GalleryState> {
+  static const int _limit = 10;
+  DocumentSnapshot? _lastDocument;
+
+  GalleryNotifier()
+      : super(GalleryState(images: [], isLoading: false, hasMore: true)) {
+    fetchImages();
+  }
+
+  Future<void> fetchImages() async {
+    if (state.isLoading || !state.hasMore) return;
+
+    state = state.copyWith(isLoading: true);
+
+    Query query = FirebaseFirestore.instance
+        .collection('images')
+        .orderBy('uploaded_at', descending: true)
+        .limit(_limit);
+
+    if (_lastDocument != null) {
+      query = query.startAfterDocument(_lastDocument!);
+    }
+
+    final snapshot = await query.get();
+
+    if (snapshot.docs.isNotEmpty) {
+      _lastDocument = snapshot.docs.last;
+    }
+
+    final allImages = [...state.images, ...snapshot.docs];
+
+    state = state.copyWith(
+      images: allImages,
+      isLoading: false,
+      hasMore: snapshot.docs.length == _limit,
+    );
+  }
+}
+
+class GalleryPage extends ConsumerStatefulWidget {
   const GalleryPage({super.key});
 
   @override
-  State<GalleryPage> createState() => _GalleryPageState();
+  ConsumerState<GalleryPage> createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> {
-  final ScrollController _scrollController = ScrollController();
-  final List<DocumentSnapshot> _images = [];
-  bool _isLoading = false;
-  bool _hasMore = true;
-  DocumentSnapshot? _lastDocument;
-  static const int _limit = 10;
+class _GalleryPageState extends ConsumerState<GalleryPage> {
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    _fetchImages();
-    _scrollController.addListener(_scrollListener);
+    _scrollController = ScrollController();
+
+    _scrollController.addListener(() {
+      final notifier = ref.read(galleryNotifierProvider.notifier);
+      final state = ref.read(galleryNotifierProvider);
+
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 300 &&
+          !state.isLoading &&
+          state.hasMore) {
+        notifier.fetchImages();
+      }
+    });
   }
 
   @override
@@ -40,118 +117,89 @@ class _GalleryPageState extends State<GalleryPage> {
     return 1;
   }
 
-  Future<void> _fetchImages() async {
-    if (_isLoading || !_hasMore) return;
-
-    setState(() => _isLoading = true);
-
-    Query query = FirebaseFirestore.instance
-        .collection('images')
-        .orderBy('uploaded_at', descending: true)
-        .limit(_limit);
-
-    if (_lastDocument != null) {
-      query = query.startAfterDocument(_lastDocument!);
-    }
-
-    final snapshot = await query.get();
-    if (snapshot.docs.isNotEmpty) {
-      _lastDocument = snapshot.docs.last;
-      _images.addAll(snapshot.docs);
-    }
-
-    setState(() {
-      _isLoading = false;
-      _hasMore = snapshot.docs.length == _limit;
-    });
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 300 &&
-        !_isLoading &&
-        _hasMore) {
-      _fetchImages();
-    }
-  }
-
-
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(galleryNotifierProvider);
     final width = MediaQuery.of(context).size.width;
-
-    int crossAxisCount = getCrossAxisCount(width);
-
-    // Number of shimmer placeholders during initial load
-    const int shimmerCount = 10;
+    final crossAxisCount = getCrossAxisCount(width);
+    const shimmerCount = 10;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Padding(
+      body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-        child: _images.isEmpty && _isLoading
-            ? GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: shimmerCount,
-                itemBuilder: (context, index) {
-                  return buildShimmerPlaceholder();
-                },
-              )
-            : GridView.builder(
-                controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: _images.length + (_hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index < _images.length) {
-                    final doc = _images[index];
-                    final imageUrl = doc['image_url'];
-                    final uploadedAt = (doc['uploaded_at'] as Timestamp).toDate();
-                    final prompt = doc['prompt'] ?? 'No prompt provided';
+        children: [
+          // Grid Images
+          if (state.images.isEmpty && state.isLoading)
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: shimmerCount,
+              itemBuilder: (context, index) => buildShimmerPlaceholder(),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: state.images.length,
+              itemBuilder: (context, index) {
+                final doc = state.images[index];
+                final imageUrl = doc['image_url'];
+                final uploadedAt = (doc['uploaded_at'] as Timestamp).toDate();
+                final prompt = doc['prompt'] ?? 'No prompt provided';
 
-                    return ImageCard(
-                      imageUrl: imageUrl,
-                      uploadedAt: uploadedAt,
-                      prompt: prompt,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ImageDetailPage(
-                              imageUrl: imageUrl,
-                              uploadedAt: uploadedAt,
-                              prompt: prompt,
-                            ),
-                          ),
-                        );
+                return ImageCard(
+                  imageUrl: imageUrl,
+                  uploadedAt: uploadedAt,
+                  prompt: prompt,
+                  onTap: () {
+                    final uri = Uri(
+                      path: '/gallery/image-detail',
+                      queryParameters: {
+                        'imageUrl': imageUrl,
+                        'prompt': prompt,
+                        'uploadedAt': uploadedAt.toIso8601String(),
                       },
                     );
-                  } else {
-                    // Pagination loading shimmer placeholder
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: SizedBox(
-                          width: 60,
-                          height: 90,
-                          child: buildShimmerPlaceholder(),
-                        ),
-                      ),
-                    );
-                  }
-                },
+                    context.go(uri.toString());
+                  },
+                );
+              },
+            ),
+
+          const SizedBox(height: 32),
+
+          if (state.isLoading)
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
               ),
+              itemCount: shimmerCount,
+              itemBuilder: (context, index) => buildShimmerPlaceholder(),
+            ),
+
+          const SizedBox(height: 48),
+
+          const FooterSection(), 
+        ],
       ),
     );
   }
