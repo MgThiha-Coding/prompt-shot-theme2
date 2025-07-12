@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:prompt_shot/widgets/animated_loader.dart';
 import 'dart:html' as html;
 import 'package:prompt_shot/widgets/footer_section.dart';
 
@@ -192,7 +193,7 @@ class _WallpaperPageState extends ConsumerState<WallpaperPage> {
           SizedBox(
             height: 300,
             child: state.wallpapers.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? AnimatedLoader()
                 : PageView.builder(
                     controller: _pageController,
                     itemCount: state.wallpapers.length,
@@ -212,7 +213,7 @@ class _WallpaperPageState extends ConsumerState<WallpaperPage> {
                                 'uploadedAt': uploadedAt.toIso8601String(),
                               },
                             );
-                            context.go(uri.toString());
+                            context.push(uri.toString());
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),

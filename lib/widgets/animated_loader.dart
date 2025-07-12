@@ -12,15 +12,14 @@ class _AnimatedLoaderState extends State<AnimatedLoader>
     with TickerProviderStateMixin {
   late final AnimationController _controller;
   static const int _dotCount = 10;
-  static const double _radius = 12;
+  static const double _radius = 28; // Increased radius
 
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1, milliseconds: 500),
+      duration: const Duration(seconds: 2),
     )..repeat();
   }
 
@@ -32,7 +31,8 @@ class _AnimatedLoaderState extends State<AnimatedLoader>
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = Colors.blueAccent.shade700;
+    final amberColor = Colors.amber.shade400;
+    final blueColor = Colors.blueAccent.shade700;
 
     return Center(
       child: AnimatedBuilder(
@@ -41,15 +41,18 @@ class _AnimatedLoaderState extends State<AnimatedLoader>
           final angle = 2 * pi / _dotCount;
 
           return SizedBox(
-            width: _radius * 2 + 24,
-            height: _radius * 2 + 24,
+            width: _radius * 2 + 32,
+            height: _radius * 2 + 32,
             child: Stack(
               children: List.generate(_dotCount, (index) {
                 final currentAngle = angle * index + (_controller.value * 2 * pi);
-                final dx = cos(currentAngle) * _radius + _radius + 12;
-                final dy = sin(currentAngle) * _radius + _radius + 12;
+                final dx = cos(currentAngle) * _radius + _radius + 16;
+                final dy = sin(currentAngle) * _radius + _radius + 16;
 
                 final opacity = (sin(currentAngle + _controller.value * 2 * pi) + 1) / 2;
+
+                // Interpolate between blue and amber
+                final blendedColor = Color.lerp(amberColor, blueColor, index / _dotCount)!.withOpacity(0.85);
 
                 return Positioned(
                   left: dx,
@@ -57,16 +60,16 @@ class _AnimatedLoaderState extends State<AnimatedLoader>
                   child: Opacity(
                     opacity: opacity.clamp(0.3, 1.0),
                     child: Container(
-                      width: 6,
-                      height: 6,
+                      width: 10,
+                      height: 10,
                       decoration: BoxDecoration(
-                        color: baseColor.withOpacity(0.9),
+                        color: blendedColor,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: baseColor.withOpacity(opacity * 0.5),
-                            blurRadius: 4,
-                            spreadRadius: 0.5,
+                            color: blendedColor.withOpacity(opacity * 0.6),
+                            blurRadius: 6,
+                            spreadRadius: 1,
                           ),
                         ],
                       ),

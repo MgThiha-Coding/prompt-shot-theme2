@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prompt_shot/widgets/shimmer.dart';
 
-final latestImagesProvider = FutureProvider<List<QueryDocumentSnapshot>>((ref) async {
+final latestImagesProvider = FutureProvider<List<QueryDocumentSnapshot>>((
+  ref,
+) async {
   final snapshot = await FirebaseFirestore.instance
       .collection('images')
       .orderBy('uploaded_at', descending: true)
@@ -15,13 +18,11 @@ final latestImagesProvider = FutureProvider<List<QueryDocumentSnapshot>>((ref) a
 class LimitedGallerySection extends ConsumerStatefulWidget {
   final int limit;
 
-  const LimitedGallerySection({
-    super.key,
-    this.limit = 12,
-  });
+  const LimitedGallerySection({super.key, this.limit = 12});
 
   @override
-  ConsumerState<LimitedGallerySection> createState() => _LimitedGallerySectionState();
+  ConsumerState<LimitedGallerySection> createState() =>
+      _LimitedGallerySectionState();
 }
 
 class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
@@ -61,6 +62,55 @@ class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.amber.shade300, Colors.amber.shade600],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.amberAccent,
+                  offset: Offset(0, 4),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: () => context.go('/gallery'),
+              icon: const Icon(
+                Icons.arrow_forward_ios,
+                size: 20,
+                color: Colors.black87,
+              ),
+              label: const Text(
+                'View More',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
         latestImagesAsync.when(
           data: (docs) {
             if (docs.isEmpty) {
@@ -81,12 +131,17 @@ class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
                   final doc = displayedDocs[index];
 
                   final imageUrl = doc['image_url'] as String? ?? '';
-                  final uploadedAt = (doc['uploaded_at'] as Timestamp?)?.toDate() ?? DateTime.now();
-                  final prompt = doc['prompt'] as String? ?? 'No prompt provided';
+                  final uploadedAt =
+                      (doc['uploaded_at'] as Timestamp?)?.toDate() ??
+                      DateTime.now();
+                  final prompt =
+                      doc['prompt'] as String? ?? 'No prompt provided';
 
                   return Container(
                     width: itemWidth,
-                    margin: EdgeInsets.only(right: index == displayedDocs.length - 1 ? 0 : 16),
+                    margin: EdgeInsets.only(
+                      right: index == displayedDocs.length - 1 ? 0 : 16,
+                    ),
                     child: GestureDetector(
                       onTap: () {
                         final uri = Uri(
@@ -136,15 +191,6 @@ class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton.icon(
-            onPressed: () => context.go('/gallery'),
-            icon: const Icon(Icons.arrow_forward),
-            label: const Text('View More'),
-          ),
-        ),
       ],
     );
   }
@@ -152,20 +198,17 @@ class _LimitedGallerySectionState extends ConsumerState<LimitedGallerySection> {
   Widget buildShimmerPlaceholder() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        color: const Color(0xFF1C1C1C),
-      ),
+      child: Container(color: const Color(0xFF1C1C1C)),
     );
   }
 }
 
+
+
 class CustomImageBox extends StatelessWidget {
   final String imageUrl;
 
-  const CustomImageBox({
-    super.key,
-    required this.imageUrl,
-  });
+  const CustomImageBox({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -186,19 +229,13 @@ class CustomImageBox extends StatelessWidget {
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
-          loadingBuilder: (context, child, progress) {
-            if (progress == null) return child;
-            return Container(
-              color: Colors.grey.shade900,
-              child: const Center(child: CircularProgressIndicator()),
-            );
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return buildShimmerPlaceholder();
           },
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey.shade900,
-            child: const Center(
-              child: Icon(Icons.broken_image, size: 40, color: Colors.white30),
-            ),
-          ),
+          errorBuilder: (context, error, stackTrace) {
+            return buildShimmerPlaceholder();
+          },
         ),
       ),
     );

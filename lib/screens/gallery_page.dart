@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prompt_shot/widgets/image_detail_page.dart';
 
 import 'package:prompt_shot/widgets/shimmer.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
@@ -175,7 +176,10 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
                   imageUrl: imageUrl,
                   uploadedAt: uploadedAt,
                   prompt: prompt,
+
                   onTap: () {
+                    
+                    
                     final uri = Uri(
                       path: '/gallery/image-detail',
                       queryParameters: {
@@ -184,7 +188,8 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
                         'uploadedAt': uploadedAt.toIso8601String(),
                       },
                     );
-                    context.go(uri.toString());
+                    context.push(uri.toString());
+                    
                   },
                 );
               },

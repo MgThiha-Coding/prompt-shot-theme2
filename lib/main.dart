@@ -138,7 +138,19 @@ class _PromptShotAppState extends State<PromptShotApp> {
                 );
               },
             ),
-
+            GoRoute(
+              path: '/wallpaper/detail',
+              builder: (context, state) {
+                final imageUrl = state.uri.queryParameters['imageUrl']!;
+                final uploadedAt = DateTime.tryParse(
+                  state.uri.queryParameters['uploadedAt'] ?? '',
+                );
+                return WallpaperDetailPage(
+                  imageUrl: imageUrl,
+                  uploadedAt: uploadedAt,
+                );
+              },
+            ),
             GoRoute(
               path: '/about',
               builder: (context, state) => const AboutPage(),
