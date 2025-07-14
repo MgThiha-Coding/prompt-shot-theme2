@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prompt_shot/widgets/image_detail_page.dart';
-import 'package:prompt_shot/widgets/wallpaper_detail_page.dart';
+import 'package:prompt_shot/screens/content_page.dart';
+import 'package:prompt_shot/screens/pavicy_policy_page.dart';
 
 import 'firebase_options.dart';
 
@@ -11,10 +11,10 @@ import 'screens/home_page.dart';
 import 'screens/gallery_page.dart';
 import 'screens/about_page.dart';
 import 'screens/blog_post_page.dart';
-import 'screens/content_page.dart';
-import 'screens/pavicy_policy_page.dart';
 import 'screens/wallpaper_page.dart';
 
+import 'widgets/image_detail_page.dart';
+import 'widgets/wallpaper_detail_page.dart';
 import 'widgets/nav_bar.dart';
 import 'widgets/drawer_menu.dart';
 
@@ -55,7 +55,7 @@ class _PromptShotAppState extends State<PromptShotApp> {
     if (path.startsWith('/contact')) return 'contact';
     if (path.startsWith('/privacy')) return 'privacy';
     if (path.startsWith('/blog')) return 'blog';
-    if (path.startsWith('/wallpapers')) return 'wallpapers'; // <-- added
+    if (path.startsWith('/wallpapers')) return 'wallpapers';
     return '';
   }
 
@@ -94,78 +94,134 @@ class _PromptShotAppState extends State<PromptShotApp> {
             );
           },
           routes: [
-            GoRoute(path: '/', builder: (context, state) => const HomePage()),
+            GoRoute(
+              path: '/',
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('HomePage'),
+                child: const HomePage(key: ValueKey('HomePage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            ),
 
             GoRoute(
               path: '/gallery',
-              builder: (context, state) => const GalleryPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('GalleryPage'),
+                child: const GalleryPage(key: ValueKey('GalleryPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
 
             GoRoute(
               path: '/wallpapers',
-              builder: (context, state) => const WallpaperPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('WallpaperPage'),
+                child: const WallpaperPage(key: ValueKey('WallpaperPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
 
             GoRoute(
               path: '/wallpaper/detail',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
-                final uploadedAtStr =
-                    state.uri.queryParameters['uploadedAt'] ?? '';
+                final uploadedAtStr = state.uri.queryParameters['uploadedAt'] ?? '';
                 final uploadedAt = DateTime.tryParse(uploadedAtStr);
 
-                return WallpaperDetailPage(
-                  imageUrl: imageUrl,
-                  uploadedAt: uploadedAt,
+                return CustomTransitionPage(
+                  key: ValueKey('WallpaperDetailPage-$imageUrl'),
+                  child: WallpaperDetailPage(
+                    key: ValueKey('WallpaperDetailPage-$imageUrl'),
+                    imageUrl: imageUrl,
+                    uploadedAt: uploadedAt,
+                  ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
                 );
               },
             ),
 
             GoRoute(
               path: '/gallery/image-detail',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final imageUrl = state.uri.queryParameters['imageUrl'] ?? '';
                 final prompt = state.uri.queryParameters['prompt'] ?? '';
-                final uploadedAtStr =
-                    state.uri.queryParameters['uploadedAt'] ?? '';
-                final uploadedAt =
-                    DateTime.tryParse(uploadedAtStr) ?? DateTime.now();
+                final uploadedAtStr = state.uri.queryParameters['uploadedAt'] ?? '';
+                final uploadedAt = DateTime.tryParse(uploadedAtStr) ?? DateTime.now();
 
-                return ImageDetailPage(
-                  imageUrl: imageUrl,
-                  prompt: prompt,
-                  uploadedAt: uploadedAt,
+                return CustomTransitionPage(
+                  key: ValueKey('ImageDetailPage-$imageUrl'),
+                  child: ImageDetailPage(
+                    key: ValueKey('ImageDetailPage-$imageUrl'),
+                    imageUrl: imageUrl,
+                    prompt: prompt,
+                    uploadedAt: uploadedAt,
+                  ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
                 );
               },
             ),
-            GoRoute(
-              path: '/wallpaper/detail',
-              builder: (context, state) {
-                final imageUrl = state.uri.queryParameters['imageUrl']!;
-                final uploadedAt = DateTime.tryParse(
-                  state.uri.queryParameters['uploadedAt'] ?? '',
-                );
-                return WallpaperDetailPage(
-                  imageUrl: imageUrl,
-                  uploadedAt: uploadedAt,
-                );
-              },
-            ),
+
             GoRoute(
               path: '/about',
-              builder: (context, state) => const AboutPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('AboutPage'),
+                child: const AboutPage(key: ValueKey('AboutPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
+
             GoRoute(
               path: '/contact',
-              builder: (context, state) => const ContactPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('ContactPage'),
+                child: const ContactPage(key: ValueKey('ContactPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
+
             GoRoute(
               path: '/privacy',
-              builder: (context, state) => const PrivacyPolicyPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('PrivacyPolicyPage'),
+                child: const PrivacyPolicyPage(key: ValueKey('PrivacyPolicyPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
+
             GoRoute(
               path: '/blog',
-              builder: (context, state) => const BlogPostPage(),
+              pageBuilder: (context, state) => CustomTransitionPage(
+                key: const ValueKey('BlogPostPage'),
+                child: const BlogPostPage(key: ValueKey('BlogPostPage')),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
             ),
           ],
         ),

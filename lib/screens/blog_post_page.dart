@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prompt_shot/widgets/footer_section.dart'; 
+import 'package:prompt_shot/widgets/footer_section.dart';
 
 class BlogPostPage extends StatelessWidget {
-  const BlogPostPage({super.key});
+  const BlogPostPage({Key? key}) : super(key: key); // Add this constructor
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // consistent bg
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         children: const [

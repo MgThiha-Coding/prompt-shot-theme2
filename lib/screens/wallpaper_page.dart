@@ -139,7 +139,7 @@ class _WallpaperPageState extends ConsumerState<WallpaperPage> {
     if (width >= 1200) return 4; // fixed 4 columns for wide screens
     if (width >= 900) return 3;
     if (width >= 600) return 2;
-    return 1;
+    return 2; // changed from 1 to 2 for mobile size
   }
 
   Future<void> downloadImage(String imageUrl) async {
@@ -149,9 +149,6 @@ class _WallpaperPageState extends ConsumerState<WallpaperPage> {
         final bytes = response.bodyBytes;
         final blob = html.Blob([bytes]);
         final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.AnchorElement(href: url)
-          ..setAttribute("download", "wallpaper.jpg")
-          ..click();
         html.Url.revokeObjectUrl(url);
       } else {
         ScaffoldMessenger.of(

@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prompt_shot/widgets/image_detail_page.dart';
-
 import 'package:prompt_shot/widgets/shimmer.dart';
 import 'package:prompt_shot/widgets/image_card.dart';
 import 'package:prompt_shot/widgets/footer_section.dart';
 
 final galleryNotifierProvider =
     StateNotifierProvider<GalleryNotifier, GalleryState>((ref) {
-      return GalleryNotifier();
-    });
+  return GalleryNotifier();
+});
 
 class GalleryState {
   final List<QueryDocumentSnapshot> images;
@@ -42,7 +40,7 @@ class GalleryNotifier extends StateNotifier<GalleryState> {
   DocumentSnapshot? _lastDocument;
 
   GalleryNotifier()
-    : super(GalleryState(images: [], isLoading: false, hasMore: true)) {
+      : super(GalleryState(images: [], isLoading: false, hasMore: true)) {
     fetchImages();
   }
 
@@ -114,8 +112,8 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
     if (width >= 1200) return 5;
     if (width >= 900) return 4;
     if (width >= 600) return 3;
-    if (width >= 400) return 2;
-    return 1;
+    // ✅ FIXED: Force 2 for all widths below 600 (including real mobile)
+    return 2;
   }
 
   @override
@@ -172,31 +170,32 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
                 final uploadedAt = (doc['uploaded_at'] as Timestamp).toDate();
                 final prompt = doc['prompt'] ?? 'No prompt provided';
 
+                final data = doc.data() as Map<String, dynamic>?;
+                final title = (data != null && data['title'] is String)
+                    ? data['title'] as String
+                    : 'No title';
+
                 return ImageCard(
                   imageUrl: imageUrl,
                   uploadedAt: uploadedAt,
                   prompt: prompt,
-
+                  title: title,
                   onTap: () {
-                    
-                    
                     final uri = Uri(
                       path: '/gallery/image-detail',
                       queryParameters: {
                         'imageUrl': imageUrl,
                         'prompt': prompt,
                         'uploadedAt': uploadedAt.toIso8601String(),
+                        'title': title,
                       },
                     );
                     context.push(uri.toString());
-                    
                   },
                 );
               },
             ),
-
           const SizedBox(height: 32),
-
           if (state.isLoading)
             GridView.builder(
               shrinkWrap: true,
@@ -210,9 +209,7 @@ class _GalleryPageState extends ConsumerState<GalleryPage> {
               itemCount: shimmerCount,
               itemBuilder: (context, index) => buildShimmerPlaceholder(),
             ),
-
           const SizedBox(height: 48),
-
           const FooterSection(),
         ],
       ),

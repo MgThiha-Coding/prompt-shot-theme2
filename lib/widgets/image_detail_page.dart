@@ -51,46 +51,49 @@ class ImageDetailPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          child: isMobile
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _imageView(context, 400),
-                    const SizedBox(height: 12),
-                    _buttonRow(context),
-                    const SizedBox(height: 24),
-                    _promptBox(context, 400),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: SizedBox(
-                        height: 450,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _promptBox(context, 370),
-                            const SizedBox(height: 10),
-                            _buttonRow(context),
-                          ],
+    return Scaffold(
+      backgroundColor: Colors.black, // Added explicit background color here
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _imageView(context, 400),
+                      const SizedBox(height: 12),
+                      _buttonRow(context),
+                      const SizedBox(height: 24),
+                      _promptBox(context, 400),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: SizedBox(
+                          height: 450,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _promptBox(context, 370),
+                              const SizedBox(height: 10),
+                              _buttonRow(context),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 24),
-                    Expanded(
-                      flex: 5,
-                      child: _imageView(context, 450),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 24),
+                      Expanded(
+                        flex: 5,
+                        child: _imageView(context, 450),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );

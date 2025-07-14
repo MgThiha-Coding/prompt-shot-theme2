@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:prompt_shot/widgets/footer_section.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+  const AboutPage({Key? key}) : super(key: key); // Add explicit constructor
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // consistent background
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         children: const [
@@ -24,7 +24,7 @@ class AboutPage extends StatelessWidget {
             style: TextStyle(fontSize: 18, color: Colors.white70),
           ),
           SizedBox(height: 120),
-          FooterSection(), 
+          FooterSection(),
         ],
       ),
     );

@@ -1,54 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 import 'package:shimmer/shimmer.dart';
 
-class ImageCard extends StatelessWidget {
+class ImageCard extends StatefulWidget {
   final String imageUrl;
   final DateTime uploadedAt;
   final String prompt;
+  final String title;
   final VoidCallback? onTap;
 
   const ImageCard({
     required this.imageUrl,
     required this.uploadedAt,
     required this.prompt,
+    required this.title,
     this.onTap,
     super.key,
   });
 
+  @override
+  State<ImageCard> createState() => _ImageCardState();
+}
+
+class _ImageCardState extends State<ImageCard> {
+  bool _copied = false;
+
   String get formattedDate =>
-      DateFormat('yyyy-MM-dd HH:mm:ss').format(uploadedAt);
+      DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.uploadedAt);
 
-  Future<void> _downloadImage(BuildContext context) async {
-    try {
-      final response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
-        final bytes = response.bodyBytes;
-        final blob = html.Blob([bytes]);
-        final url = html.Url.createObjectUrlFromBlob(blob);
-        final anchor = html.AnchorElement(href: url)
-          ..target = 'blank'
-          ..download = 'promptshot_image.jpg';
-        anchor.click();
-        html.Url.revokeObjectUrl(url);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to download image')),
-        );
+  void _copyPrompt() {
+    html.window.navigator.clipboard?.writeText(widget.prompt);
+    setState(() {
+      _copied = true;
+    });
+    // Reset back to "Copy Prompt" after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _copied = false;
+        });
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
-  }
-
-  void _copyPrompt(BuildContext context) {
-    html.window.navigator.clipboard?.writeText(prompt);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Prompt copied!')),
-    );
+    });
   }
 
   Widget buildShimmerPlaceholder() {
@@ -69,34 +62,60 @@ class ImageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Card(
         color: Colors.grey.shade900,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         child: Column(
           children: [
+            // Image fits container fully with BoxFit.cover
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(14),
+                ),
                 child: Image.network(
-                  imageUrl,
+                  widget.imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   loadingBuilder: (context, child, progress) {
                     if (progress == null) return child;
-                    return buildShimmerPlaceholder(); // While loading
+                    return buildShimmerPlaceholder();
                   },
                   errorBuilder: (context, error, stackTrace) {
-                    return buildShimmerPlaceholder(); // On error too
+                    return buildShimmerPlaceholder();
                   },
                 ),
               ),
             ),
-            Padding(
+
+            // Title with transparent background and opacity
+            if (widget.title.isNotEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 12,
+                ),
+                color: Colors.black.withOpacity(0.4),
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+            // Prompt & Copy button area with opacity background
+            Container(
+              color: Colors.black.withOpacity(0.4),
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  const SizedBox(height: 8),
                   ExpansionTile(
                     title: const Text(
                       'View Prompt',
@@ -111,40 +130,71 @@ class ImageCard extends StatelessWidget {
                         height: 120,
                         child: SingleChildScrollView(
                           child: Text(
-                            prompt,
+                            widget.prompt,
                             style: const TextStyle(color: Colors.white70),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      ElevatedButton.icon(
-                        onPressed: () => _copyPrompt(context),
-                        icon: const Icon(Icons.copy, size: 18, color: Color.fromARGB(255, 70, 63, 63)),
-                        label: const Text('Copy Prompt',style: TextStyle( color : Color.fromARGB(255, 68, 63, 63)),),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                        ),
-                      ),
                     ],
                   ),
+
                   const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () => _downloadImage(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'Download',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container(
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 8,
+                              child: ElevatedButton.icon(
+                                onPressed: _copyPrompt,
+                                icon: const Icon(
+                                  Icons.copy,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  _copied ? 'Copied' : 'Copy Prompt',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.amber.withOpacity(0.85),
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton(
+                                onPressed: widget.onTap,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.amber.withOpacity(0.85),
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  minimumSize: const Size(40, 40),
+                                ),
+                                child: const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
+
+                  const SizedBox(height: 8),
                 ],
               ),
             ),
